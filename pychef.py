@@ -6,9 +6,11 @@ import pathlib
 import time
 import codecs
 
+# -- Track the start time to calculate runtime at the end --
 start_time = time.perf_counter()
 
 
+# -- Encode and decode funtions for all the ciphers --
 def binary_encode(input):
     s = input.decode()
     b = "".join(format(ord(char), "08b") for char in s)
@@ -69,10 +71,15 @@ def decimal_decode(input):
     return "".join(letters)
 
 
+# -- Positional arguments used for argparse --
 ENCODERS = {
     "binary": {
         "encode": binary_encode,
         "decode": binary_decode,
+    },
+    "decimal": {
+        "encode": decimal_encode,
+        "decode": decimal_decode,
     },
     "hex": {
         "encode": hex_encode,
@@ -85,10 +92,6 @@ ENCODERS = {
     "rot13": {
         "encode": rot13_encode,
         "decode": rot13_decode,
-    },
-    "decimal": {
-        "encode": decimal_encode,
-        "decode": decimal_decode,
     },
 }
 
@@ -124,6 +127,7 @@ def parse_args():
     return p.parse_args()
 
 
+# -- Where the magic happens --
 def main():
     args = parse_args()
 
