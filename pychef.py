@@ -9,45 +9,6 @@ import codecs
 start_time = time.perf_counter()
 
 
-# -- cli arguments --
-def parse_args():
-    p = argparse.ArgumentParser(
-        prog="PyChef",
-        description="CLI tool that encodes and decodes various ciphers (based on CyberChef)",
-        epilog="Written by Daniel Herrera",
-    )
-    p.add_argument(
-        "input",
-        help="Filename or String containing the plaintext or cipher text you want to decode or encode.",
-    )
-    p.add_argument(
-        "-d", "--decode", action="store_true", help="Decode: Decode the cipher text."
-    )
-    p.add_argument(
-        "-e", "--encode", action="store_true", help="Encode: Encode the plain text."
-    )
-    p.add_argument(
-        "-b", "--binary", action="store_true", help="Binary: Encode or Decode binary."
-    )
-    p.add_argument(
-        "-b16", "--hex", action="store_true", help="Hex: Encode or decode hex."
-    )
-    p.add_argument(
-        "-b64", "--base64", action="store_true", help="Base64: Encode or decode base64."
-    )
-    p.add_argument(
-        "-r13", "--rot13", action="store_true", help="Rot13: Encode or decode Rot13."
-    )
-
-    return p.parse_args()
-
-
-# -- if a file is used opens the file and returns as bytes --
-def file_open(the_file):
-    with pathlib.Path(the_file).open("rb") as fh:
-        return fh.read()
-
-
 def binary_encode(input):
     s = input.decode()
     b = "".join(format(ord(char), "08b") for char in s)
@@ -91,6 +52,57 @@ def rot13_decode(input):
     return s
 
 
+ENCODERS = {
+    "binary": {
+        "encode": binary_encode,
+        "decode": binary_decode,
+    },
+    "hex": {
+        "encode": hex_encode,
+        "decode": hex_decode,
+    },
+    "base64": {
+        "encode": base64_encode,
+        "decode": base64_decode,
+    },
+    "rot13": {
+        "encode": rot13_encode,
+        "decode": rot13_decode,
+    },
+}
+
+
+# -- if a file is used opens the file and returns as bytes --
+def file_open(the_file):
+    with pathlib.Path(the_file).open("rb") as fh:
+        return fh.read()
+
+
+# -- cli arguments --
+def parse_args():
+    p = argparse.ArgumentParser(
+        prog="PyChef",
+        description="CLI tool that encodes and decodes various ciphers (based on CyberChef)",
+        epilog="Written by Daniel Herrera",
+    )
+    p.add_argument(
+        "mode",
+        choices=["encode", "decode"],
+        help="Choose the mode you want to use (encode/decode).",
+    )
+    p.add_argument(
+        "scheme",
+        choices=ENCODERS.keys(),
+        help="Choose the cipher you want to encode/decode with.",
+    )
+    p.add_argument(
+        "input",
+        help="Filename or String containing plaintext/cipher text to decode or encode.",
+    )
+
+    return p.parse_args()
+
+
 def main():
     args = parse_args()
 
@@ -100,26 +112,8 @@ def main():
         else:
             text = args.input.encode()
 
-        if args.encode:
-            if args.binary:
-                output = binary_encode(text)
-            elif args.hex:
-                output = hex_encode(text)
-            elif args.base64:
-                output = base64_encode(text)
-            elif args.rot13:
-                output = rot13_encode(text)
-        elif args.decode:
-            if args.binary:
-                output = binary_decode(text)
-            elif args.hex:
-                output = hex_decode(text)
-            elif args.base64:
-                output = base64_decode(text)
-            elif args.rot13:
-                output = rot13_decode(text)
-        else:
-            print("NOPE")
+        func = ENCODERS[args.scheme][args.mode]
+        output = func(text)
 
         print("==========================================")
         print(f"\nOutput: {output}")
