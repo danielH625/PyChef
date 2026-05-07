@@ -52,6 +52,23 @@ def rot13_decode(input):
     return s
 
 
+def decimal_encode(input):
+    s = input.decode()
+    dec = []
+    for letter in s:
+        dec.append(str(ord(letter)))
+    return " ".join(dec)
+
+
+def decimal_decode(input):
+    s = input.decode()
+    decimal = s.split()
+    letters = []
+    for num in decimal:
+        letters.append(chr(int(num)))
+    return "".join(letters)
+
+
 ENCODERS = {
     "binary": {
         "encode": binary_encode,
@@ -68,6 +85,10 @@ ENCODERS = {
     "rot13": {
         "encode": rot13_encode,
         "decode": rot13_decode,
+    },
+    "decimal": {
+        "encode": decimal_encode,
+        "decode": decimal_decode,
     },
 }
 
@@ -116,7 +137,7 @@ def main():
         output = func(text)
 
         print("==========================================")
-        print(f"\nOutput: {output}")
+        print(f"\nOutput:\n-------\n{output}")
 
     except Exception as e:
         print(f"{str(e)} occured")
