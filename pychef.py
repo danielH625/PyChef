@@ -54,6 +54,24 @@ def rot13_decode(input):
     return s
 
 
+def rot_brute_force(input):
+    encoded_string = input.decode().lower()
+    alphebet = "abcdefghijklmnopqrstuvwxyz"
+    encrypt_list = encoded_string.split()
+    print("==========================================")
+    print("\nOutput:\n-------\n")
+
+    for rot in range(1, 27):
+        for word in encrypt_list:
+            for letter in word:
+                index = alphebet.index(letter) + rot
+                if index >= 26:
+                    index = index - 26
+                print(alphebet[index], end="")
+            print(end=" ")
+        print("")
+
+
 def decimal_encode(input):
     s = input.decode()
     dec = []
@@ -92,6 +110,9 @@ ENCODERS = {
     "rot13": {
         "encode": rot13_encode,
         "decode": rot13_decode,
+    },
+    "rotbf": {
+        "decode": rot_brute_force,
     },
 }
 
@@ -140,11 +161,12 @@ def main():
         func = ENCODERS[args.scheme][args.mode]
         output = func(text)
 
-        print("==========================================")
-        print(f"\nOutput:\n-------\n{output}")
+        if args.scheme != "rotbf":
+            print("==========================================")
+            print(f"\nOutput:\n-------\n{output}")
 
     except Exception as e:
-        print(f"{str(e)} occured")
+        print(f"EXECPTION: {str(e)}")
 
     else:
         end_time = time.perf_counter()
