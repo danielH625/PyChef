@@ -1,7 +1,6 @@
 #!/bin/python3
 
 import argparse
-import code
 import pathlib
 import time
 import codecs
@@ -42,16 +41,10 @@ def base64_decode(input):
     return s.decode()
 
 
-def rot13_encode(input):
+def rot13_encode_decode(input):
     s = input.decode()
     r13 = codecs.encode(s, "rot13")
     return r13
-
-
-def rot13_decode(input):
-    r13 = input.decode()
-    s = codecs.decode(r13, "rot13")
-    return s
 
 
 def rot_brute_force(input):
@@ -108,11 +101,12 @@ ENCODERS = {
         "decode": base64_decode,
     },
     "rot13": {
-        "encode": rot13_encode,
-        "decode": rot13_decode,
+        "encode": rot13_encode_decode,
+        "decode": rot13_encode_decode,
     },
     "rotbf": {
         "decode": rot_brute_force,
+        "encode": rot_brute_force,
     },
 }
 
